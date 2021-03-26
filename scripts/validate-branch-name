@@ -1,0 +1,35 @@
+#!/bin/bash
+#
+# Pre-commit hooks
+
+# Check branch name
+
+DEFAULT_BRANCH_NAME=`git rev-parse --abbrev-ref HEAD`
+BRANCH_NAME=${1:-$DEFAULT_BRANCH_NAME}
+
+REGEXP="^fix.*|^chore.*|^create-app-skeleton$|^header$|^footer$|^hero-section$|^info-section$|^subreddit-form$|^load-the-data$|^heatmap$|^posts-table$|^readme$"
+
+BRANCH_NAME_LENGTH=`echo $BRANCH_NAME | grep -E $REGEXP | wc -c`
+
+if [ ${BRANCH_NAME_LENGTH} -eq 0 ] ; then
+  echo "The name of the current branch does not match any of the tasks. Please use the title of a task in Asana in lower case. Replace whitespace with a dash (-)"
+  echo
+  echo "Current branch name:" $BRANCH_NAME
+  echo
+  echo "Accepted branch names are:"
+  echo "  create-app-skeleton"
+  echo "  header"
+  echo "  footer"
+  echo "  hero-section"
+  echo "  info-section"
+  echo "  subreddit-form"
+  echo "  load-the-data"
+  echo "  heatmap"
+  echo "  posts-table"
+  echo "  readme"
+  echo
+  echo "If you need to do something outside of the scope of a ticket like a bug fix you can alternatively prefix the branch name with fix/ or chore/"
+  echo "e.g. fix/my-branch-name or chore/my-branch-name"
+  echo
+  exit 1
+fi

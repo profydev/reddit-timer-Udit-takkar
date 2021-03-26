@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Validate Branch Name
+      run: sh ./scripts/validate-branch-name ${{ github.head_ref }}
+
+    - name: Install
+      run: yarn install
+
+    - name: Lint
+      run: yarn lint
+
+    - name: Integration Tests
+      run: yarn test
+
+    - name: End-to-End Tests
+      uses: cypress-io/github-action@v2
+      with:
+        start: yarn start
+        # quote the url to be safe against YML parsing surprises
+        wait-on: 'http://localhost:3000'
+        env: branch-name=${{ github.head_ref }}
+      env:
+        TZ: Europe/Berlin
+
+    - name: Build
+      run: yarn build
